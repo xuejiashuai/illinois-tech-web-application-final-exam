@@ -1,0 +1,50 @@
+/* FamilyFeast - Custom Styles (with Bootstrap) */
+
+body {
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFE8E5 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logo-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #E85A4F;
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    font-size: 1.1rem;
+    color: #5C5552;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+/* Custom primary button style */
+.btn-primary {
+    background: linear-gradient(135deg, #E85A4F 0%, #F9A826 100%);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #d14d43 0%, #e09520 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(232, 90, 79, 0.4);
+}
+
+/* Custom outline button style */
+.btn-outline-dark {
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    border-width: 2px;
+}
+
+.btn-outline-dark:hover {
+    transform: translateY(-2px);
+}
