@@ -1,0 +1,25 @@
+{
+  "name": "illinois-tech-web-application-final-exam",
+  "version": "1.0.0",
+  "description": "This is the home repo for the IIT programming and application course final example",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xuejiashuai/illinois-tech-web-application-final-exam.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/xuejiashuai/illinois-tech-web-application-final-exam/issues"
+  },
+  "homepage": "https://github.com/xuejiashuai/illinois-tech-web-application-final-exam#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
