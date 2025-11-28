@@ -48,3 +48,22 @@ body {
 .btn-outline-dark:hover {
     transform: translateY(-2px);
 }
+
+/* Login form styles */
+.login-form {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.login-form .form-control {
+    border-radius: 25px;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.login-form .form-control:focus {
+    border-color: #E85A4F;
+    box-shadow: 0 0 0 3px rgba(232, 90, 79, 0.15);
+}
