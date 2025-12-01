@@ -67,6 +67,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        // Helper function to show message with shake animation
+        function showMessage(element, message, isError) {
+            element.textContent = message;
+            element.className = isError ? 'mb-2 text-danger' : 'mb-2 text-success';
+            element.style.display = 'block';
+            
+            // Remove shake class and re-add to trigger animation
+            element.classList.remove('shake');
+            void element.offsetWidth; // Force reflow
+            element.classList.add('shake');
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -89,13 +101,11 @@
                     // Login successful - go to main page
                     window.location.href = 'main.html';
                 } else {
-                    // Show error message
-                    errorMsg.textContent = data.message;
-                    errorMsg.style.display = 'block';
+                    // Show error message with shake
+                    showMessage(errorMsg, data.message, true);
                 }
             } catch (error) {
-                errorMsg.textContent = 'Error connecting to server';
-                errorMsg.style.display = 'block';
+                showMessage(errorMsg, 'Error connecting to server', true);
             }
         });
 
@@ -119,20 +129,14 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    signupMsg.textContent = 'Account created! You can now sign in.';
-                    signupMsg.className = 'mb-2 text-success';
-                    signupMsg.style.display = 'block';
+                    showMessage(signupMsg, 'Account created! You can now sign in.', false);
                     // Clear the form
                     document.getElementById('signupForm').reset();
                 } else {
-                    signupMsg.textContent = data.message;
-                    signupMsg.className = 'mb-2 text-danger';
-                    signupMsg.style.display = 'block';
+                    showMessage(signupMsg, data.message, true);
                 }
             } catch (error) {
-                signupMsg.textContent = 'Error connecting to server';
-                signupMsg.className = 'mb-2 text-danger';
-                signupMsg.style.display = 'block';
+                showMessage(signupMsg, 'Error connecting to server', true);
             }
         });
     </script>
