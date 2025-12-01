@@ -12,11 +12,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 // MySQL Database Connection
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: 'simon-web-app-db.ckdokgaambpx.us-east-1.rds.amazonaws.com',
     user: 'admin',           // Change to your MySQL username
     password: 'Xjs960117!',           // Change to your MySQL password
-    database: 'illinois_tech_app'  // Change to your database name
+    database: 'illinois_tech_app',  // Change to your database name
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 // Connect to MySQL
