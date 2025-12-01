@@ -16,7 +16,7 @@ const db = mysql.createConnection({
     host: 'simon-web-app-db.ckdokgaambpx.us-east-1.rds.amazonaws.com',
     user: 'admin',           // Change to your MySQL username
     password: 'Xjs960117!',           // Change to your MySQL password
-    database: 'simon-web-app-db'  // Change to your database name
+    database: 'illinois_tech_app'  // Change to your database name
 });
 
 // Connect to MySQL
@@ -31,6 +31,37 @@ db.connect((err) => {
 // Route for the home page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Sign Up route - create new user
+app.post('/signup', (req, res) => {
+    const { username, password } = req.body;
+
+    // Check if username already exists
+    const checkQuery = 'SELECT * FROM users WHERE username = ?';
+    
+    db.query(checkQuery, [username], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+
+        if (results.length > 0) {
+            return res.json({ success: false, message: 'Username already exists' });
+        }
+
+        // Insert new user
+        const insertQuery = 'INSERT INTO users (username, password, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)';
+        
+        db.query(insertQuery, [username, password], (err, result) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.json({ success: false, message: 'Database error' });
+            }
+            
+            res.json({ success: true, message: 'Account created successfully' });
+        });
+    });
 });
 
 // Login route - check username and password
