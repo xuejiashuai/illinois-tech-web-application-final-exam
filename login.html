@@ -20,13 +20,14 @@
                     Dining in or pickup available.
                 </p>
                 
-                <form class="mt-4 login-form" action="main.html">
+                <form class="mt-4 login-form" id="loginForm">
                     <div class="mb-3">
-                        <input type="text" class="form-control" id="username" placeholder="Username">
+                        <input type="text" class="form-control" id="username" placeholder="Username" required>
                     </div>
                     <div class="mb-3">
-                        <input type="password" class="form-control" id="password" placeholder="Password">
+                        <input type="password" class="form-control" id="password" placeholder="Password" required>
                     </div>
+                    <div id="errorMsg" class="text-danger mb-2" style="display: none;"></div>
                     <div class="d-flex gap-2 justify-content-center">
                         <button type="submit" class="btn btn-primary">Sign In</button>
                         <a href="signup.html" class="btn btn-outline-dark">Sign Up</a>
@@ -38,6 +39,39 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Login successful - go to main page
+                    window.location.href = 'main.html';
+                } else {
+                    // Show error message
+                    errorMsg.textContent = data.message;
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                errorMsg.textContent = 'Error connecting to server';
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
-<!-- Bootstrap JS -->
