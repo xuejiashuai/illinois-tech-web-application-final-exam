@@ -30,9 +30,35 @@
                     <div id="errorMsg" class="text-danger mb-2" style="display: none;"></div>
                     <div class="d-flex gap-2 justify-content-center">
                         <button type="submit" class="btn btn-primary">Sign In</button>
-                        <a href="signup.html" class="btn btn-outline-dark">Sign Up</a>
+                        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signupModalLabel">Create Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm">
+                        <div class="mb-3">
+                            <label for="signupUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="signupUsername" placeholder="Choose a username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signupPassword" placeholder="Choose a password" required>
+                        </div>
+                        <div id="signupMsg" class="mb-2" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -70,6 +96,43 @@
             } catch (error) {
                 errorMsg.textContent = 'Error connecting to server';
                 errorMsg.style.display = 'block';
+            }
+        });
+
+        // Sign Up form submission
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const signupMsg = document.getElementById('signupMsg');
+            
+            try {
+                const response = await fetch('/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    signupMsg.textContent = 'Account created! You can now sign in.';
+                    signupMsg.className = 'mb-2 text-success';
+                    signupMsg.style.display = 'block';
+                    // Clear the form
+                    document.getElementById('signupForm').reset();
+                } else {
+                    signupMsg.textContent = data.message;
+                    signupMsg.className = 'mb-2 text-danger';
+                    signupMsg.style.display = 'block';
+                }
+            } catch (error) {
+                signupMsg.textContent = 'Error connecting to server';
+                signupMsg.className = 'mb-2 text-danger';
+                signupMsg.style.display = 'block';
             }
         });
     </script>
