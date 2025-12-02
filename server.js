@@ -86,6 +86,44 @@ app.post('/login', (req, res) => {
     });
 });
 
+// Create Order route - save order to database
+app.post('/order', (req, res) => {
+    const { username, items, total, mealDate, mealTime, numPeople, notes } = req.body;
+
+    const insertQuery = `
+        INSERT INTO orders (username, items, total, meal_date, meal_time, num_people, notes, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `;
+    
+    // Convert items array to JSON string for storage
+    const itemsJson = JSON.stringify(items);
+    
+    db.query(insertQuery, [username, itemsJson, total, mealDate, mealTime, numPeople, notes], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        res.json({ success: true, message: 'Order placed successfully', orderId: result.insertId });
+    });
+});
+
+// Get Order History route - fetch user's orders
+app.get('/orders/:username', (req, res) => {
+    const { username } = req.params;
+
+    const query = 'SELECT * FROM orders WHERE username = ? ORDER BY created_at DESC LIMIT 5';
+    
+    db.query(query, [username], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        res.json({ success: true, orders: results });
+    });
+});
+
 // Start server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

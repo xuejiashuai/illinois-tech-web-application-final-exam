@@ -98,7 +98,8 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Login successful - go to main page
+                    // Save username and go to main page
+                    sessionStorage.setItem('username', username);
                     window.location.href = 'main.html';
                 } else {
                     // Show error message with shake
