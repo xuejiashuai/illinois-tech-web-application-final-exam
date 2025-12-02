@@ -96,8 +96,8 @@ app.post('/order', (req, res) => {
     const { username, items, total, mealDate, mealTime, numPeople, notes } = req.body;
 
     const insertQuery = `
-        INSERT INTO orders (username, items, total, meal_date, meal_time, num_people, notes, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        INSERT INTO orders (username, items, total, meal_date, meal_time, num_people, notes, status, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'in_progress', CURRENT_TIMESTAMP)
     `;
     
     // Convert items array to JSON string for storage
@@ -110,6 +110,46 @@ app.post('/order', (req, res) => {
         }
         
         res.json({ success: true, message: 'Order placed successfully', orderId: result.insertId });
+    });
+});
+
+// Cancel Order route - update order status to cancelled
+app.put('/order/:orderId/cancel', (req, res) => {
+    const { orderId } = req.params;
+
+    const updateQuery = 'UPDATE orders SET status = "cancelled" WHERE id = ? AND status = "in_progress"';
+    
+    db.query(updateQuery, [orderId], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Order cancelled successfully' });
+        } else {
+            res.json({ success: false, message: 'Order cannot be cancelled' });
+        }
+    });
+});
+
+// Complete Order route - update order status to completed (admin only)
+app.put('/order/:orderId/complete', (req, res) => {
+    const { orderId } = req.params;
+
+    const updateQuery = 'UPDATE orders SET status = "completed" WHERE id = ? AND status = "in_progress"';
+    
+    db.query(updateQuery, [orderId], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Order completed successfully' });
+        } else {
+            res.json({ success: false, message: 'Order cannot be marked as complete' });
+        }
     });
 });
 

@@ -196,6 +196,26 @@
         </div>
     </div>
 
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <span style="font-size: 4rem;">⚠️</span>
+                    </div>
+                    <h4 class="mb-2">Cancel Order?</h4>
+                    <p class="text-muted mb-1">Are you sure you want to cancel</p>
+                    <p class="fw-bold mb-4" id="cancelOrderId">Order #0</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">No, Keep It</button>
+                        <button type="button" class="btn btn-danger px-4" id="confirmCancelBtn">Yes, Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -506,16 +526,38 @@
                     pastOrders[order.id] = items;
                     
                     const itemsList = items.map(item => `${item.name} x${item.quantity}`).join(', ');
-                    const mealInfo = `📅 ${order.meal_date} at ${order.meal_time} (${order.num_people} people)`;
+                    // Format meal date to yyyy-mm-dd
+                    const mealDate = new Date(order.meal_date).toISOString().split('T')[0];
+                    const mealInfo = `📅 ${mealDate} at ${order.meal_time} (${order.num_people} people)`;
                     const orderDate = new Date(order.created_at).toLocaleString();
+                    
+                    // Status badge
+                    const status = order.status || 'in_progress';
+                    let statusBadge = '';
+                    if (status === 'in_progress') {
+                        statusBadge = '<span class="badge bg-warning text-dark">⏳ In Progress</span>';
+                    } else if (status === 'cancelled') {
+                        statusBadge = '<span class="badge bg-danger">❌ Cancelled</span>';
+                    } else if (status === 'completed') {
+                        statusBadge = '<span class="badge bg-success">✅ Completed</span>';
+                    }
+                    
+                    // Cancel button (only for in_progress orders)
+                    const cancelBtn = status === 'in_progress' ? 
+                        `<button class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="cancelOrder(${order.id})">Cancel Order</button>` : '';
+                    
                     html += `
                         <div class="border-bottom pb-3 mb-3 ${index === 0 ? 'bg-light p-2 rounded' : ''}">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <small class="text-muted">Order #${order.id}</small>
+                                ${statusBadge}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="text-muted">${itemsList}</small>
                                 <strong class="text-success">${order.total}</strong>
                             </div>
-                            <small class="text-muted d-block mb-1">${itemsList}</small>
                             <small class="text-primary d-block mb-2">${mealInfo}</small>
+                            ${cancelBtn}
                             <button class="btn btn-sm reorder-btn w-100" onclick="reorder(${order.id})">
                                 🔄 Re-order
                             </button>
@@ -529,6 +571,62 @@
                 orderHistoryDiv.innerHTML = '<p class="text-muted text-center">Error loading orders</p>';
             }
         }
+
+        // Cancel order function - show confirmation modal
+        let orderToCancel = null;
+        
+        function cancelOrder(orderId) {
+            orderToCancel = orderId;
+            document.getElementById('cancelOrderId').textContent = 'Order #' + orderId;
+            const cancelModal = new bootstrap.Modal(document.getElementById('cancelModal'));
+            cancelModal.show();
+        }
+        
+        // Confirm cancel button click handler
+        document.getElementById('confirmCancelBtn').addEventListener('click', async function() {
+            if (!orderToCancel) return;
+            
+            try {
+                const response = await fetch('/order/' + orderToCancel + '/cancel', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                // Close the modal
+                const cancelModal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+                cancelModal.hide();
+                
+                if (data.success) {
+                    // Show toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '9999';
+                    toast.innerHTML = `
+                        <div class="toast show bg-danger text-white" role="alert">
+                            <div class="toast-body">
+                                ❌ Order #${orderToCancel} has been cancelled
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                    
+                    // Reload order history
+                    loadOrderHistory();
+                } else {
+                    alert('Failed to cancel order: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+                alert('Error cancelling order');
+            }
+            
+            orderToCancel = null;
+        });
 
         // Re-order function - add items from past order to cart
         function reorder(orderId) {
