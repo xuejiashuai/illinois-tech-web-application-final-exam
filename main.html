@@ -14,64 +14,653 @@
     <header class="py-3 mb-4 border-bottom">
         <div class="container d-flex justify-content-between align-items-center">
             <span class="fs-4 fw-bold">🍽️ Simon X's Kitchen</span>
-            <span class="text-muted">Welcome, <strong>User Name</strong></span>
+            <span class="text-muted">Welcome, <strong id="displayUsername">User</strong></span>
         </div>
     </header>
 
     <div class="container py-4">
-        <div class="text-center mb-5">
-            <h1 class="title">Our Menu</h1>
-            <p class="description">Choose from our delicious home-cooked meals</p>
-        </div>
+        <div class="row">
+            <!-- Menu Section -->
+            <div class="col-lg-8">
+                <div class="text-center mb-4">
+                    <h1 class="title">Our Menu</h1>
+                    <p class="description">Choose from our delicious home-cooked meals</p>
+                </div>
 
-        <div class="row g-4">
-            <!-- Menu Item 1 -->
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="fs-1 mb-3">🍝</div>
-                        <h5 class="card-title">Spaghetti</h5>
-                        <p class="card-text">Classic spaghetti with homemade tomato sauce</p>
-                        <p class="fw-bold">$12.99</p>
-                        <button class="btn btn-primary">Add to Order</button>
+                <div class="row g-4">
+                    <!-- Menu Item 1 -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="fs-1 mb-3">🍝</div>
+                                <h5 class="card-title">Spaghetti</h5>
+                                <p class="card-text">Classic spaghetti with homemade tomato sauce</p>
+                                <p class="fw-bold">$12.99</p>
+                                <button class="btn btn-primary" onclick="addToCart('Spaghetti', 12.99)">Add to Order</button>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Menu Item 2 -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="fs-1 mb-3">🍗</div>
+                                <h5 class="card-title">Fried Chicken</h5>
+                                <p class="card-text">Crispy fried chicken with secret spices</p>
+                                <p class="fw-bold">$14.99</p>
+                                <button class="btn btn-primary" onclick="addToCart('Fried Chicken', 14.99)">Add to Order</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Item 3 -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="fs-1 mb-3">🥗</div>
+                                <h5 class="card-title">Garden Salad</h5>
+                                <p class="card-text">Fresh vegetables with house dressing</p>
+                                <p class="fw-bold">$8.99</p>
+                                <button class="btn btn-primary" onclick="addToCart('Garden Salad', 8.99)">Add to Order</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Item 4 -->
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="fs-1 mb-3">🍔</div>
+                                <h5 class="card-title">Burger</h5>
+                                <p class="card-text">Juicy beef burger with fresh toppings</p>
+                                <p class="fw-bold">$10.99</p>
+                                <button class="btn btn-primary" onclick="addToCart('Burger', 10.99)">Add to Order</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="login.html" class="btn btn-outline-dark" onclick="sessionStorage.clear()">Sign Out</a>
                 </div>
             </div>
 
-            <!-- Menu Item 2 -->
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="fs-1 mb-3">🍗</div>
-                        <h5 class="card-title">Fried Chicken</h5>
-                        <p class="card-text">Crispy fried chicken with secret spices</p>
-                        <p class="fw-bold">$14.99</p>
-                        <button class="btn btn-primary">Add to Order</button>
+            <!-- Cart & Order History Section -->
+            <div class="col-lg-4">
+                <!-- Cart -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">🛒 Your Cart</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="cartItems">
+                            <p class="text-muted text-center">Your cart is empty</p>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span id="cartTotal">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary w-100" id="checkoutBtn" data-bs-toggle="modal" data-bs-target="#checkoutModal" disabled>
+                            Checkout
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Order History -->
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">📋 Recent Orders</h5>
+                    </div>
+                    <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                        <div id="orderHistory">
+                            <p class="text-muted text-center">No recent orders</p>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Menu Item 3 -->
-            <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="fs-1 mb-3">🥗</div>
-                        <h5 class="card-title">Garden Salad</h5>
-                        <p class="card-text">Fresh vegetables with house dressing</p>
-                        <p class="fw-bold">$8.99</p>
-                        <button class="btn btn-primary">Add to Order</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5">
-            <a href="login.html" class="btn btn-outline-dark">Sign Out</a>
         </div>
     </div>
 
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkoutModalLabel">🍽️ Complete Your Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="checkoutForm">
+                        <div class="mb-3">
+                            <label for="mealDate" class="form-label">Meal Date</label>
+                            <input type="date" class="form-control" id="mealDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mealTime" class="form-label">Meal Time</label>
+                            <select class="form-select" id="mealTime" required>
+                                <option value="">Select a time</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="11:30">11:30 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="12:30">12:30 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="13:30">1:30 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="14:30">2:30 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="15:30">3:30 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="16:30">4:30 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="17:30">5:30 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                                <option value="18:30">6:30 PM</option>
+                                <option value="19:00">7:00 PM</option>
+                                <option value="19:30">7:30 PM</option>
+                                <option value="20:00">8:00 PM</option>
+                                <option value="20:30">8:30 PM</option>
+                                <option value="21:00">9:00 PM</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="numPeople" class="form-label">Number of People</label>
+                            <select class="form-select" id="numPeople" required>
+                                <option value="">Select number of people</option>
+                                <option value="1">1 Person</option>
+                                <option value="2">2 People</option>
+                                <option value="3">3 People</option>
+                                <option value="4">4 People</option>
+                                <option value="5">5 People</option>
+                                <option value="6">6 People</option>
+                                <option value="7">7 People</option>
+                                <option value="8">8+ People</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="additionalNotes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="additionalNotes" rows="3" placeholder="Any allergies, special requests, or delivery instructions..."></textarea>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold mb-3">
+                            <span>Order Total:</span>
+                            <span id="modalTotal">$0.00</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Confirm Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <span style="font-size: 4rem;">⚠️</span>
+                    </div>
+                    <h4 class="mb-2">Cancel Order?</h4>
+                    <p class="text-muted mb-1">Are you sure you want to cancel</p>
+                    <p class="fw-bold mb-4" id="cancelOrderId">Order #0</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">No, Keep It</button>
+                        <button type="button" class="btn btn-danger px-4" id="confirmCancelBtn">Yes, Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-body py-5">
+                    <div class="success-checkmark">
+                        <div class="check-icon">
+                            <span class="icon-line line-tip"></span>
+                            <span class="icon-line line-long"></span>
+                            <div class="icon-circle"></div>
+                            <div class="icon-fix"></div>
+                        </div>
+                    </div>
+                    <h3 class="text-success mt-4 mb-3">Order Confirmed!</h3>
+                    <p class="text-muted mb-2">Thank you for your order</p>
+                    <h4 id="successOrderId" class="mb-3"></h4>
+                    <div class="order-summary bg-light p-3 rounded mb-3">
+                        <p class="mb-1"><strong>📅 Date:</strong> <span id="successDate"></span></p>
+                        <p class="mb-1"><strong>⏰ Time:</strong> <span id="successTime"></span></p>
+                        <p class="mb-1"><strong>👥 Party Size:</strong> <span id="successPeople"></span></p>
+                        <p class="mb-0"><strong>💰 Total:</strong> <span id="successTotal" class="text-success"></span></p>
+                    </div>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue Ordering</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Success Checkmark Animation */
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+        }
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            border-radius: 50%;
+            box-sizing: content-box;
+            border: 4px solid #4CAF50;
+        }
+        .check-icon::before {
+            top: 3px;
+            left: -2px;
+            width: 30px;
+            transform-origin: 100% 50%;
+            border-radius: 100px 0 0 100px;
+        }
+        .check-icon::after {
+            top: 0;
+            left: 30px;
+            width: 60px;
+            transform-origin: 0 50%;
+            border-radius: 0 100px 100px 0;
+            animation: rotate-circle 4.25s ease-in;
+        }
+        .check-icon::before, .check-icon::after {
+            content: '';
+            height: 100px;
+            position: absolute;
+            background: #FFFFFF;
+            transform: rotate(-45deg);
+        }
+        .check-icon .icon-line {
+            height: 5px;
+            background-color: #4CAF50;
+            display: block;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+        }
+        .check-icon .icon-line.line-tip {
+            top: 46px;
+            left: 14px;
+            width: 25px;
+            transform: rotate(45deg);
+            animation: icon-line-tip 0.75s;
+        }
+        .check-icon .icon-line.line-long {
+            top: 38px;
+            right: 8px;
+            width: 47px;
+            transform: rotate(-45deg);
+            animation: icon-line-long 0.75s;
+        }
+        .check-icon .icon-circle {
+            top: -4px;
+            left: -4px;
+            z-index: 10;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            position: absolute;
+            box-sizing: content-box;
+            border: 4px solid rgba(76, 175, 80, 0.5);
+        }
+        .check-icon .icon-fix {
+            top: 8px;
+            width: 5px;
+            left: 26px;
+            z-index: 1;
+            height: 85px;
+            position: absolute;
+            transform: rotate(-45deg);
+            background-color: #FFFFFF;
+        }
+        @keyframes rotate-circle {
+            0% { transform: rotate(-45deg); }
+            5% { transform: rotate(-45deg); }
+            12% { transform: rotate(-405deg); }
+            100% { transform: rotate(-405deg); }
+        }
+        @keyframes icon-line-tip {
+            0% { width: 0; left: 1px; top: 19px; }
+            54% { width: 0; left: 1px; top: 19px; }
+            70% { width: 50px; left: -8px; top: 37px; }
+            84% { width: 17px; left: 21px; top: 48px; }
+            100% { width: 25px; left: 14px; top: 46px; }
+        }
+        @keyframes icon-line-long {
+            0% { width: 0; right: 46px; top: 54px; }
+            65% { width: 0; right: 46px; top: 54px; }
+            84% { width: 55px; right: 0px; top: 35px; }
+            100% { width: 47px; right: 8px; top: 38px; }
+        }
+        
+        /* Re-order Button Style */
+        .reorder-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.4rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .reorder-btn:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Display the logged-in username
+        const username = sessionStorage.getItem('username');
+        if (username) {
+            document.getElementById('displayUsername').textContent = username;
+        } else {
+            // If no username, redirect to login
+            window.location.href = 'login.html';
+        }
+
+        // Cart functionality
+        let cart = [];
+
+        function addToCart(name, price) {
+            // Check if item already in cart
+            const existingItem = cart.find(item => item.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            
+            updateCartDisplay();
+        }
+
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotalSpan = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p class="text-muted text-center">Your cart is empty</p>';
+                cartTotalSpan.textContent = '$0.00';
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                html += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>${item.name}</strong>
+                            <small class="text-muted d-block">$${item.price.toFixed(2)} x ${item.quantity}</small>
+                        </div>
+                        <div>
+                            <span class="me-2">$${itemTotal.toFixed(2)}</span>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart('${item.name}')">×</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartItemsDiv.innerHTML = html;
+            cartTotalSpan.textContent = '$' + total.toFixed(2);
+            checkoutBtn.disabled = false;
+        }
+
+        // Update modal total when it opens
+        document.getElementById('checkoutModal').addEventListener('show.bs.modal', function () {
+            document.getElementById('modalTotal').textContent = document.getElementById('cartTotal').textContent;
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('mealDate').min = today;
+            document.getElementById('mealDate').value = today;
+        });
+
+        // Checkout form submission
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const total = document.getElementById('cartTotal').textContent;
+            const mealDate = document.getElementById('mealDate').value;
+            const mealTime = document.getElementById('mealTime').value;
+            const numPeople = document.getElementById('numPeople').value;
+            const notes = document.getElementById('additionalNotes').value;
+            
+            // Send order to server
+            try {
+                const response = await fetch('/order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        items: cart,
+                        total: total,
+                        mealDate: mealDate,
+                        mealTime: mealTime,
+                        numPeople: numPeople,
+                        notes: notes
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Close checkout modal
+                    const checkoutModal = bootstrap.Modal.getInstance(document.getElementById('checkoutModal'));
+                    checkoutModal.hide();
+                    
+                    // Reset form
+                    document.getElementById('checkoutForm').reset();
+                    
+                    // Show success modal with order details
+                    document.getElementById('successOrderId').textContent = 'Order #' + data.orderId;
+                    document.getElementById('successDate').textContent = mealDate;
+                    document.getElementById('successTime').textContent = document.querySelector('#mealTime option[value="' + mealTime + '"]')?.textContent || mealTime;
+                    document.getElementById('successPeople').textContent = numPeople + (numPeople === '1' ? ' Person' : ' People');
+                    document.getElementById('successTotal').textContent = total;
+                    
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    
+                    cart = [];
+                    updateCartDisplay();
+                    loadOrderHistory();
+                } else {
+                    alert('Error placing order: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error connecting to server');
+            }
+        });
+
+        // Store past orders for re-ordering
+        let pastOrders = {};
+
+        // Order History functionality - load from database
+        async function loadOrderHistory() {
+            const orderHistoryDiv = document.getElementById('orderHistory');
+            
+            try {
+                const response = await fetch('/orders/' + username);
+                const data = await response.json();
+                
+                if (!data.success || data.orders.length === 0) {
+                    orderHistoryDiv.innerHTML = '<p class="text-muted text-center">No recent orders</p>';
+                    return;
+                }
+
+                let html = '';
+                data.orders.forEach((order, index) => {
+                    const items = JSON.parse(order.items);
+                    // Store items for re-ordering
+                    pastOrders[order.id] = items;
+                    
+                    const itemsList = items.map(item => `${item.name} x${item.quantity}`).join(', ');
+                    // Format meal date to yyyy-mm-dd
+                    const mealDate = new Date(order.meal_date).toISOString().split('T')[0];
+                    const mealInfo = `📅 ${mealDate} at ${order.meal_time} (${order.num_people} people)`;
+                    const orderDate = new Date(order.created_at).toLocaleString();
+                    
+                    // Status badge
+                    const status = order.status || 'in_progress';
+                    let statusBadge = '';
+                    if (status === 'in_progress') {
+                        statusBadge = '<span class="badge bg-warning text-dark">⏳ In Progress</span>';
+                    } else if (status === 'cancelled') {
+                        statusBadge = '<span class="badge bg-danger">❌ Cancelled</span>';
+                    } else if (status === 'completed') {
+                        statusBadge = '<span class="badge bg-success">✅ Completed</span>';
+                    }
+                    
+                    // Cancel button (only for in_progress orders)
+                    const cancelBtn = status === 'in_progress' ? 
+                        `<button class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="cancelOrder(${order.id})">Cancel Order</button>` : '';
+                    
+                    html += `
+                        <div class="border-bottom pb-3 mb-3 ${index === 0 ? 'bg-light p-2 rounded' : ''}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">Order #${order.id}</small>
+                                ${statusBadge}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="text-muted">${itemsList}</small>
+                                <strong class="text-success">${order.total}</strong>
+                            </div>
+                            <small class="text-primary d-block mb-2">${mealInfo}</small>
+                            ${cancelBtn}
+                            <button class="btn btn-sm reorder-btn w-100" onclick="reorder(${order.id})">
+                                🔄 Re-order
+                            </button>
+                        </div>
+                    `;
+                });
+
+                orderHistoryDiv.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading order history:', error);
+                orderHistoryDiv.innerHTML = '<p class="text-muted text-center">Error loading orders</p>';
+            }
+        }
+
+        // Cancel order function - show confirmation modal
+        let orderToCancel = null;
+        
+        function cancelOrder(orderId) {
+            orderToCancel = orderId;
+            document.getElementById('cancelOrderId').textContent = 'Order #' + orderId;
+            const cancelModal = new bootstrap.Modal(document.getElementById('cancelModal'));
+            cancelModal.show();
+        }
+        
+        // Confirm cancel button click handler
+        document.getElementById('confirmCancelBtn').addEventListener('click', async function() {
+            if (!orderToCancel) return;
+            
+            try {
+                const response = await fetch('/order/' + orderToCancel + '/cancel', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                // Close the modal
+                const cancelModal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+                cancelModal.hide();
+                
+                if (data.success) {
+                    // Show toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '9999';
+                    toast.innerHTML = `
+                        <div class="toast show bg-danger text-white" role="alert">
+                            <div class="toast-body">
+                                ❌ Order #${orderToCancel} has been cancelled
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                    
+                    // Reload order history
+                    loadOrderHistory();
+                } else {
+                    alert('Failed to cancel order: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+                alert('Error cancelling order');
+            }
+            
+            orderToCancel = null;
+        });
+
+        // Re-order function - add items from past order to cart
+        function reorder(orderId) {
+            const items = pastOrders[orderId];
+            if (!items) return;
+            
+            // Add each item to cart
+            items.forEach(item => {
+                for (let i = 0; i < item.quantity; i++) {
+                    addToCart(item.name, item.price);
+                }
+            });
+            
+            // Show confirmation
+            const toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 p-3';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                <div class="toast show bg-success text-white" role="alert">
+                    <div class="toast-body">
+                        ✅ Items added to cart from Order #${orderId}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Load order history on page load
+        loadOrderHistory();
+    </script>
 </body>
 </html>
-

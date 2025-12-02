@@ -51,7 +51,7 @@ app.post('/signup', (req, res) => {
         }
 
         // Insert new user
-        const insertQuery = 'INSERT INTO users (username, password, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)';
+        const insertQuery = 'INSERT INTO users (username, password, role, created_at) VALUES (?, ?, "user", CURRENT_TIMESTAMP)';
         
         db.query(insertQuery, [username, password], (err, result) => {
             if (err) {
@@ -68,7 +68,7 @@ app.post('/signup', (req, res) => {
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
-    const query = 'SELECT * FROM illinois_tech_app.users WHERE username = ? AND password = ?';
+    const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
     
     db.query(query, [username, password], (err, results) => {
         if (err) {
@@ -78,11 +78,108 @@ app.post('/login', (req, res) => {
 
         if (results.length > 0) {
             // User found - login successful
-            res.json({ success: true, message: 'Login successful' });
+            const user = results[0];
+            res.json({ 
+                success: true, 
+                message: 'Login successful',
+                role: user.role || 'user'  // Return user role (default to 'user' if not set)
+            });
         } else {
             // No matching user
             res.json({ success: false, message: 'Invalid username or password' });
         }
+    });
+});
+
+// Create Order route - save order to database
+app.post('/order', (req, res) => {
+    const { username, items, total, mealDate, mealTime, numPeople, notes } = req.body;
+
+    const insertQuery = `
+        INSERT INTO orders (username, items, total, meal_date, meal_time, num_people, notes, status, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'in_progress', CURRENT_TIMESTAMP)
+    `;
+    
+    // Convert items array to JSON string for storage
+    const itemsJson = JSON.stringify(items);
+    
+    db.query(insertQuery, [username, itemsJson, total, mealDate, mealTime, numPeople, notes], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        res.json({ success: true, message: 'Order placed successfully', orderId: result.insertId });
+    });
+});
+
+// Cancel Order route - update order status to cancelled
+app.put('/order/:orderId/cancel', (req, res) => {
+    const { orderId } = req.params;
+
+    const updateQuery = 'UPDATE orders SET status = "cancelled" WHERE id = ? AND status = "in_progress"';
+    
+    db.query(updateQuery, [orderId], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Order cancelled successfully' });
+        } else {
+            res.json({ success: false, message: 'Order cannot be cancelled' });
+        }
+    });
+});
+
+// Complete Order route - update order status to completed (admin only)
+app.put('/order/:orderId/complete', (req, res) => {
+    const { orderId } = req.params;
+
+    const updateQuery = 'UPDATE orders SET status = "completed" WHERE id = ? AND status = "in_progress"';
+    
+    db.query(updateQuery, [orderId], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Order completed successfully' });
+        } else {
+            res.json({ success: false, message: 'Order cannot be marked as complete' });
+        }
+    });
+});
+
+// Get Order History route - fetch user's orders
+app.get('/orders/:username', (req, res) => {
+    const { username } = req.params;
+
+    const query = 'SELECT * FROM orders WHERE username = ? ORDER BY created_at DESC LIMIT 5';
+    
+    db.query(query, [username], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        res.json({ success: true, orders: results });
+    });
+});
+
+// Admin route - get all orders
+app.get('/admin/orders', (req, res) => {
+    const query = 'SELECT * FROM orders ORDER BY created_at DESC';
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        res.json({ success: true, orders: results });
     });
 });
 
