@@ -51,7 +51,7 @@ app.post('/signup', (req, res) => {
         }
 
         // Insert new user
-        const insertQuery = 'INSERT INTO users (username, password, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)';
+        const insertQuery = 'INSERT INTO users (username, password, role, created_at) VALUES (?, ?, "user", CURRENT_TIMESTAMP)';
         
         db.query(insertQuery, [username, password], (err, result) => {
             if (err) {
@@ -68,7 +68,7 @@ app.post('/signup', (req, res) => {
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
-    const query = 'SELECT * FROM illinois_tech_app.users WHERE username = ? AND password = ?';
+    const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
     
     db.query(query, [username, password], (err, results) => {
         if (err) {
@@ -78,7 +78,12 @@ app.post('/login', (req, res) => {
 
         if (results.length > 0) {
             // User found - login successful
-            res.json({ success: true, message: 'Login successful' });
+            const user = results[0];
+            res.json({ 
+                success: true, 
+                message: 'Login successful',
+                role: user.role || 'user'  // Return user role (default to 'user' if not set)
+            });
         } else {
             // No matching user
             res.json({ success: false, message: 'Invalid username or password' });
@@ -115,6 +120,20 @@ app.get('/orders/:username', (req, res) => {
     const query = 'SELECT * FROM orders WHERE username = ? ORDER BY created_at DESC LIMIT 5';
     
     db.query(query, [username], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.json({ success: false, message: 'Database error' });
+        }
+        
+        res.json({ success: true, orders: results });
+    });
+});
+
+// Admin route - get all orders
+app.get('/admin/orders', (req, res) => {
+    const query = 'SELECT * FROM orders ORDER BY created_at DESC';
+    
+    db.query(query, (err, results) => {
         if (err) {
             console.error('Database error:', err);
             return res.json({ success: false, message: 'Database error' });

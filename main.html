@@ -323,6 +323,24 @@
             84% { width: 55px; right: 0px; top: 35px; }
             100% { width: 47px; right: 8px; top: 38px; }
         }
+        
+        /* Re-order Button Style */
+        .reorder-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.4rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .reorder-btn:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
     </style>
 
     <!-- Bootstrap JS -->
@@ -465,6 +483,9 @@
             }
         });
 
+        // Store past orders for re-ordering
+        let pastOrders = {};
+
         // Order History functionality - load from database
         async function loadOrderHistory() {
             const orderHistoryDiv = document.getElementById('orderHistory');
@@ -481,17 +502,23 @@
                 let html = '';
                 data.orders.forEach((order, index) => {
                     const items = JSON.parse(order.items);
+                    // Store items for re-ordering
+                    pastOrders[order.id] = items;
+                    
                     const itemsList = items.map(item => `${item.name} x${item.quantity}`).join(', ');
                     const mealInfo = `📅 ${order.meal_date} at ${order.meal_time} (${order.num_people} people)`;
                     const orderDate = new Date(order.created_at).toLocaleString();
                     html += `
-                        <div class="border-bottom pb-2 mb-2 ${index === 0 ? 'bg-light p-2 rounded' : ''}">
-                            <div class="d-flex justify-content-between">
+                        <div class="border-bottom pb-3 mb-3 ${index === 0 ? 'bg-light p-2 rounded' : ''}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
                                 <small class="text-muted">Order #${order.id}</small>
                                 <strong class="text-success">${order.total}</strong>
                             </div>
-                            <small class="text-muted d-block">${itemsList}</small>
-                            <small class="text-primary d-block">${mealInfo}</small>
+                            <small class="text-muted d-block mb-1">${itemsList}</small>
+                            <small class="text-primary d-block mb-2">${mealInfo}</small>
+                            <button class="btn btn-sm reorder-btn w-100" onclick="reorder(${order.id})">
+                                🔄 Re-order
+                            </button>
                         </div>
                     `;
                 });
@@ -501,6 +528,37 @@
                 console.error('Error loading order history:', error);
                 orderHistoryDiv.innerHTML = '<p class="text-muted text-center">Error loading orders</p>';
             }
+        }
+
+        // Re-order function - add items from past order to cart
+        function reorder(orderId) {
+            const items = pastOrders[orderId];
+            if (!items) return;
+            
+            // Add each item to cart
+            items.forEach(item => {
+                for (let i = 0; i < item.quantity; i++) {
+                    addToCart(item.name, item.price);
+                }
+            });
+            
+            // Show confirmation
+            const toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 p-3';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                <div class="toast show bg-success text-white" role="alert">
+                    <div class="toast-body">
+                        ✅ Items added to cart from Order #${orderId}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
         // Load order history on page load
