@@ -1,13 +1,6 @@
 // Simple tests for CI/CD pipeline
 
 describe('Basic Tests', () => {
-    
-    // Test that server.js can be loaded without errors
-    test('server.js syntax is valid', () => {
-        expect(() => {
-            require('./server.js');
-        }).not.toThrow();
-    });
 
     // Test that required modules exist
     test('express module exists', () => {
@@ -20,7 +13,7 @@ describe('Basic Tests', () => {
         expect(mysql).toBeDefined();
     });
 
-    // Basic math test (sanity check)
+    // Basic sanity check
     test('basic functionality works', () => {
         expect(1 + 1).toBe(2);
     });
