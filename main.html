@@ -30,52 +30,52 @@
                 <div class="row g-4">
                     <!-- Menu Item 1 -->
                     <div class="col-md-6">
-                        <div class="card h-100">
+                        <div class="card h-100 menu-card">
                             <div class="card-body text-center">
-                                <div class="fs-1 mb-3">🍝</div>
+                                <div class="fs-1 mb-3 menu-icon" id="icon-spaghetti">🍝</div>
                                 <h5 class="card-title">Spaghetti</h5>
                                 <p class="card-text">Classic spaghetti with homemade tomato sauce</p>
                                 <p class="fw-bold">$12.99</p>
-                                <button class="btn btn-primary" onclick="addToCart('Spaghetti', 12.99)">Add to Order</button>
+                                <button class="btn btn-primary" onclick="addToCart('Spaghetti', 12.99, 'icon-spaghetti')">Add to Order</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Menu Item 2 -->
                     <div class="col-md-6">
-                        <div class="card h-100">
+                        <div class="card h-100 menu-card">
                             <div class="card-body text-center">
-                                <div class="fs-1 mb-3">🍗</div>
+                                <div class="fs-1 mb-3 menu-icon" id="icon-chicken">🍗</div>
                                 <h5 class="card-title">Fried Chicken</h5>
                                 <p class="card-text">Crispy fried chicken with secret spices</p>
                                 <p class="fw-bold">$14.99</p>
-                                <button class="btn btn-primary" onclick="addToCart('Fried Chicken', 14.99)">Add to Order</button>
+                                <button class="btn btn-primary" onclick="addToCart('Fried Chicken', 14.99, 'icon-chicken')">Add to Order</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Menu Item 3 -->
                     <div class="col-md-6">
-                        <div class="card h-100">
+                        <div class="card h-100 menu-card">
                             <div class="card-body text-center">
-                                <div class="fs-1 mb-3">🥗</div>
+                                <div class="fs-1 mb-3 menu-icon" id="icon-salad">🥗</div>
                                 <h5 class="card-title">Garden Salad</h5>
                                 <p class="card-text">Fresh vegetables with house dressing</p>
                                 <p class="fw-bold">$8.99</p>
-                                <button class="btn btn-primary" onclick="addToCart('Garden Salad', 8.99)">Add to Order</button>
+                                <button class="btn btn-primary" onclick="addToCart('Garden Salad', 8.99, 'icon-salad')">Add to Order</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Menu Item 4 -->
                     <div class="col-md-6">
-                        <div class="card h-100">
+                        <div class="card h-100 menu-card">
                             <div class="card-body text-center">
-                                <div class="fs-1 mb-3">🍔</div>
+                                <div class="fs-1 mb-3 menu-icon" id="icon-burger">🍔</div>
                                 <h5 class="card-title">Burger</h5>
                                 <p class="card-text">Juicy beef burger with fresh toppings</p>
                                 <p class="fw-bold">$10.99</p>
-                                <button class="btn btn-primary" onclick="addToCart('Burger', 10.99)">Add to Order</button>
+                                <button class="btn btn-primary" onclick="addToCart('Burger', 10.99, 'icon-burger')">Add to Order</button>
                             </div>
                         </div>
                     </div>
@@ -89,8 +89,8 @@
             <!-- Cart & Order History Section -->
             <div class="col-lg-4">
                 <!-- Cart -->
-                <div class="card mb-4">
-                    <div class="card-header bg-dark text-white">
+                <div class="card mb-4" id="cartCard">
+                    <div class="card-header bg-dark text-white" id="cartHeader">
                         <h5 class="mb-0">🛒 Your Cart</h5>
                     </div>
                     <div class="card-body">
@@ -361,6 +361,39 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
+        
+        /* Add to Cart Animation */
+        .menu-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Flying icon animation */
+        .flying-icon {
+            position: fixed;
+            font-size: 2.5rem;
+            z-index: 9999;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* Card hover effect */
+        .menu-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        /* Cart pulse when item added */
+        .cart-pulse {
+            animation: cartPulse 0.5s ease;
+        }
+        @keyframes cartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 
     <!-- Bootstrap JS -->
@@ -379,7 +412,43 @@
         // Cart functionality
         let cart = [];
 
-        function addToCart(name, price) {
+        function addToCart(name, price, iconId) {
+            // Create flying animation
+            if (iconId) {
+                const icon = document.getElementById(iconId);
+                const cartHeader = document.getElementById('cartHeader');
+                
+                // Get positions
+                const iconRect = icon.getBoundingClientRect();
+                const cartRect = cartHeader.getBoundingClientRect();
+                
+                // Create flying clone
+                const flyingIcon = document.createElement('div');
+                flyingIcon.className = 'flying-icon';
+                flyingIcon.textContent = icon.textContent;
+                flyingIcon.style.left = iconRect.left + 'px';
+                flyingIcon.style.top = iconRect.top + 'px';
+                document.body.appendChild(flyingIcon);
+                
+                // Trigger animation after a small delay
+                setTimeout(() => {
+                    flyingIcon.style.left = cartRect.left + 'px';
+                    flyingIcon.style.top = cartRect.top + 'px';
+                    flyingIcon.style.transform = 'scale(0.3)';
+                    flyingIcon.style.opacity = '0.5';
+                }, 10);
+                
+                // Remove flying icon and pulse cart
+                setTimeout(() => {
+                    flyingIcon.remove();
+                    // Pulse the cart
+                    const cartCard = document.getElementById('cartCard');
+                    cartCard.classList.remove('cart-pulse');
+                    void cartCard.offsetWidth;
+                    cartCard.classList.add('cart-pulse');
+                }, 800);
+            }
+            
             // Check if item already in cart
             const existingItem = cart.find(item => item.name === name);
             
