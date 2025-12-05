@@ -13,10 +13,10 @@ app.use(express.static(__dirname));
 
 // MySQL Connection Pool
 const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: 'simon-web-app-db.ckdokgaambpx.us-east-1.rds.amazonaws.com',
+    user: 'admin',
+    password: 'Xjs960117!',
+    database: 'illinois_tech_app',
     waitForConnections: true,
     connectionLimit: 10,      // Maximum number of connections in pool
     queueLimit: 0             // Unlimited queue
