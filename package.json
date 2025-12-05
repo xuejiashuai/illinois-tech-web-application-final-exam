@@ -21,7 +21,9 @@
   "homepage": "https://github.com/xuejiashuai/illinois-tech-web-application-final-exam#readme",
   "dependencies": {
     "express": "^5.1.0",
-    "mysql2": "^3.6.0",
+    "mysql2": "^3.6.0"
+  },
+  "devDependencies": {
     "jest": "^29.7.0"
   }
 }
