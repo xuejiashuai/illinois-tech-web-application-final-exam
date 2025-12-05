@@ -11,21 +11,25 @@ app.use(express.urlencoded({ extended: true }));
 // Serve all static files (HTML, CSS, JS, images)
 app.use(express.static(__dirname));
 
-// MySQL Database Connection
-const db = mysql.createConnection({
+// MySQL Connection Pool
+const db = mysql.createPool({
     host: 'simon-web-app-db.ckdokgaambpx.us-east-1.rds.amazonaws.com',
     user: 'admin',           // Change to your MySQL username
     password: 'Xjs960117!',           // Change to your MySQL password
-    database: 'illinois_tech_app'  // Change to your database name
+    database: 'illinois_tech_app',  // Change to your database name
+    waitForConnections: true,
+    connectionLimit: 10,      // Maximum number of connections in pool
+    queueLimit: 0             // Unlimited queue
 });
 
-// Connect to MySQL
-db.connect((err) => {
+// Test pool connection
+db.getConnection((err, connection) => {
     if (err) {
-        console.error('Error connecting to MySQL:', err);
+        console.error('Error connecting to MySQL pool:', err);
         return;
     }
-    console.log('Connected to MySQL database');
+    console.log('Connected to MySQL database pool');
+    connection.release(); // Release connection back to pool
 });
 
 // Route for the home page
